@@ -8,7 +8,7 @@ namespace Client
     class IGamePresenter
     {
     public:
-        virtual Game* GetCurrentGame() = 0;
+        virtual shared_ptr<Game> GetCurrentGame() = 0;
         virtual int GetWinner() = 0;
         virtual void HostAndJoin() = 0;
         virtual void Show() = 0;
@@ -21,10 +21,10 @@ namespace Client
     /// </summary>
     class GameView
     {
-       IGamePresenter* m_gamePresenter;
+       shared_ptr<IGamePresenter> m_gamePresenter;
 
     public:
-        GameView(IGamePresenter* gamePresenter)
+        GameView(shared_ptr<IGamePresenter>& gamePresenter)
         {
             m_gamePresenter = gamePresenter;
         }
@@ -87,7 +87,7 @@ namespace Client
             }
         }
 
-        int PromptInteger(std::string prompt, int min, int max)
+        int PromptInteger(string const& prompt, int min, int max)
         {
             bool isValid = false;
 
@@ -112,12 +112,12 @@ namespace Client
 
         void ShowTiles()
         {
-            int*** tiles = m_gamePresenter->GetCurrentGame()->GetTiles();
-            for (int i = 0; i < 3; i++)
+            auto tiles = m_gamePresenter->GetCurrentGame()->GetTiles();
+            for (int i = 0; i < tiles.size(); i++)
             {
-                for (int j = 0; j < 3; j++)
+                for (int j = 0; j < tiles[0].size(); j++)
                 {
-                    int tilePlayerId = *tiles[j][i];
+                    int tilePlayerId = tiles[j][i];
 
                     std::cout << " ";
                     if (tilePlayerId == 0)
@@ -137,7 +137,7 @@ namespace Client
                         std::cout << tilePlayerId;
                     }
 
-                    if (j < 3-1)
+                    if (j < tiles[0].size() - 1)
                     {
                         std:: cout << " |";
                     }
@@ -145,7 +145,7 @@ namespace Client
 
                 std::cout << std::endl;
 
-                if (i < 3-1)
+                if (i < tiles.size() - 1)
                 {
                     std::cout << "-----------" << std::endl;
                 }
@@ -159,19 +159,20 @@ namespace Client
     /// </summary>
     class GamePresenter : public IGamePresenter
     {
-        IGameService* m_gameService;
-        GameView* m_gameView;
-        Game* m_currentGame;
+        shared_ptr<IGameService> m_gameService;
+        unique_ptr<GameView> m_gameView;
+        shared_ptr<Game> m_currentGame;
         int m_currentGameId;
 
     public:
-        GamePresenter(IGameService* gameService)
+        GamePresenter(shared_ptr<IGameService>& gameService)
         {
             m_gameService = gameService;
-            m_gameView = new GameView(this);
+            auto self = shared_ptr<IGamePresenter>(this);
+            m_gameView = unique_ptr<GameView>(new GameView(self));
         }
 
-        Game* GetCurrentGame()
+        shared_ptr<Game> GetCurrentGame()
         {
             return m_currentGame;
         }
@@ -200,7 +201,7 @@ namespace Client
         void WaitForMove()
         {
             // ideally this would block and wait until it's the players turn again
-            PlayerAction* opponentAction = m_gameService->WaitForMove(m_currentGameId, 1);
+            auto opponentAction = m_gameService->WaitForMove(m_currentGameId, 1);
             m_gameService->Move(m_currentGameId, opponentAction->PlayerId, opponentAction->PosX, opponentAction->PosY);
         }
     };
@@ -210,9 +211,9 @@ namespace Client
     public:
         Application()
         {
-            IGameService* gameService = TicTacToe::Client::ClientProxyGameService::CreateLocal();
+            auto gameService = shared_ptr<IGameService>(TicTacToe::Client::ClientProxyGameService::CreateLocal());
 
-            GamePresenter* gamePresenter = new GamePresenter(gameService);
+            auto gamePresenter = unique_ptr<IGamePresenter>(new GamePresenter(gameService));
             gamePresenter->Show();
         }
     };
@@ -220,7 +221,7 @@ namespace Client
 
 int main()
 {
-    TicTacToe::Client::Application* application = new TicTacToe::Client::Application();
+    auto application = unique_ptr<TicTacToe::Client::Application>(new TicTacToe::Client::Application());
     std::cout << "kthxbai" << std::endl;
     return 0;
 }
