@@ -4,7 +4,7 @@
 class IArtificialIntelligence
 {
 public:
-    virtual PlayerAction* ComputeSuggestedAction(Game* game, int playerId) = 0;
+    virtual shared_ptr<PlayerAction> ComputeSuggestedAction(shared_ptr<Game>& game, int playerId) = 0;
 };
 
 class BogoArtificialIntelligence : public IArtificialIntelligence
@@ -18,13 +18,26 @@ public:
         m_boardSize = boardSize;
     }
 
-    PlayerAction* ComputeSuggestedAction(Game* game, int playerId)
+    shared_ptr<PlayerAction> ComputeSuggestedAction(shared_ptr<Game>& game, int playerId)
     {
-        PlayerAction* opponentAction = new PlayerAction;
+        shared_ptr<PlayerAction> opponentAction(new PlayerAction);
+        opponentAction->PosX = 0;
+        opponentAction->PosY = 0;
+
+        if (game->IsNewGame())
+        {
+            bool goFirst = rand() % 2;
+
+            if (!goFirst)
+            {
+                opponentAction->PlayerId = 0;
+                return opponentAction;
+            }
+        }
+
         opponentAction->PlayerId = playerId;
 
         bool isValidAction = false;
-
         while (!isValidAction)
         {
             int randX = rand() % m_boardSize;
@@ -33,7 +46,7 @@ public:
             int randY = rand() % m_boardSize;
             opponentAction->PosY = randY;
 
-            isValidAction = *game->GetTiles()[randX][randY] == 0;
+            isValidAction = game->GetTiles()[randX][randY] == 0;
         }
 
         return opponentAction; 
