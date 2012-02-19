@@ -19,9 +19,13 @@ namespace Client
     /// <summary>
     /// Ideally this view can be replaced by any UX medium: console, xterm, etc.
     /// </summary>
+    using std::cin;
+    using std::cout;
+    using std::endl;
     class GameView
     {
-       shared_ptr<IGamePresenter> m_gamePresenter;
+
+        shared_ptr<IGamePresenter> m_gamePresenter;
 
     public:
         GameView(shared_ptr<IGamePresenter>& gamePresenter)
@@ -31,7 +35,7 @@ namespace Client
 
         void ShowDialog()
         {
-            std::cout << "hey it's T1c t@c t0e! :)" << std::endl;
+            cout << "hey it's T1c t@c t0e! :)" << endl;
 
             m_gamePresenter->HostAndJoin();
 
@@ -52,18 +56,20 @@ namespace Client
                 winningPlayerId = m_gamePresenter->GetWinner();
             }
 
-            std::cout << std::endl;
+            cout << endl;
             ShowTiles();
-            std::cout << std::endl;
+            cout << endl;
 
             if (winningPlayerId == 1)
             {
-                std::cout << "You win!" << std::endl;
+                cout << "You win!" << endl;
             }
             else
             {
-                std::cout << "You lose!" << std::endl;
+                cout << "You lose!" << endl;
             }
+
+            cout << "kthxbai" << endl;
         }
 
     private:
@@ -72,9 +78,9 @@ namespace Client
             bool isValidMove = false;
             while (!isValidMove)
             {
-                std::cout << std::endl;
+                cout << endl;
                 ShowTiles();
-                std::cout << std::endl;
+                cout << endl;
 
                 int xCoordChoice = PromptInteger("Next move X co-ordinate? (1-3)", 1, 3);
                 int yCoordChoice = PromptInteger("Next move Y co-ordinate? (1-3)", 1, 3);
@@ -82,7 +88,7 @@ namespace Client
                 isValidMove = m_gamePresenter->Move(xCoordChoice - 1, yCoordChoice - 1);
                 if (!isValidMove)
                 {
-                    std::cout << "Move is invalid." << std::endl;
+                    cout << "Move is invalid." << endl;
                 }
             }
         }
@@ -94,13 +100,13 @@ namespace Client
             int inputInt;
             while (!isValid)
             {
-                std::cout << prompt << " ";
-                std::cin >> inputInt;
+                cout << prompt << " ";
+                cin >> inputInt;
 
-                if (std::cin.fail() || inputInt < min || inputInt > max)
+                if (cin.fail() || inputInt < min || inputInt > max)
                 {
-                    std::cin.clear();
-                    std::cin.ignore();
+                    cin.clear();
+                    cin.ignore();
                     continue;
                 }
 
@@ -119,35 +125,35 @@ namespace Client
                 {
                     int tilePlayerId = tiles[j][i];
 
-                    std::cout << " ";
+                    cout << " ";
                     if (tilePlayerId == 0)
                     {
-                        std::cout << " ";
+                        cout << " ";
                     }
                     else if (tilePlayerId == 1)
                     {
-                        std::cout << "X";
+                        cout << "X";
                     }
                     else if (tilePlayerId == 2)
                     {
-                        std::cout << "O";
+                        cout << "O";
                     }
                     else
                     {
-                        std::cout << tilePlayerId;
+                        cout << tilePlayerId;
                     }
 
                     if (j < tiles[0].size() - 1)
                     {
-                        std:: cout << " |";
+                        cout << " |";
                     }
                 }
 
-                std::cout << std::endl;
+                cout << endl;
 
                 if (i < tiles.size() - 1)
                 {
-                    std::cout << "-----------" << std::endl;
+                    cout << "-----------" << std::endl;
                 }
             }
         }
@@ -222,6 +228,5 @@ namespace Client
 int main()
 {
     auto application = unique_ptr<TicTacToe::Client::Application>(new TicTacToe::Client::Application());
-    std::cout << "kthxbai" << std::endl;
     return 0;
 }
