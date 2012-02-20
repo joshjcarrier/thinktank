@@ -1,2 +1,2 @@
 all:
-	g++ src/tictactoe.cpp -std=c++0x -o TicTacToe
+	g++ src/tictactoe-cli.cpp -std=c++0x -o TicTacToe-cli

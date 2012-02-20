@@ -21,10 +21,21 @@ public:
     shared_ptr<PlayerAction> ComputeSuggestedAction(shared_ptr<Game>& game, int playerId)
     {
         auto opponentAction = shared_ptr<PlayerAction>(new PlayerAction);
+
+        if (game->IsNewGame())
+        {
+            bool goFirst = rand() % 2;
+
+            if (!goFirst)
+            {
+                opponentAction->PlayerId = 0;
+                return opponentAction;
+            }
+        }
+
         opponentAction->PlayerId = playerId;
 
         bool isValidAction = false;
-
         while (!isValidAction)
         {
             int randX = rand() % m_boardSize;
