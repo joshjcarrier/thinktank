@@ -21,6 +21,8 @@ public:
     shared_ptr<PlayerAction> ComputeSuggestedAction(shared_ptr<Game>& game, int playerId)
     {
         shared_ptr<PlayerAction> opponentAction(new PlayerAction);
+        opponentAction->PosX = 0;
+        opponentAction->PosY = 0;
 
         if (game->IsNewGame())
         {

@@ -3,7 +3,7 @@ WX_VERSION=2.8.12
 all: cli wx
 
 cli:
-	g++ src/tictactoe-cli.cpp -std=c++0x -o TicTacToe-cli
+	g++ src/tictactoe-cli.cpp -std=c++0x -g -o TicTacToe-cli
 
 wx:
 	g++ src/tictactoe-wx.cpp `src/wx/$(WX_VERSION)/wx-config --libs --cxxflags` -std=c++0x -g -o TicTacToe-wx

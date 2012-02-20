@@ -13,7 +13,7 @@ namespace Client
 
     public:
         WxGameView(shared_ptr<IGamePresenter>& gamePresenter)
-        : wxFrame(NULL, -1, _("Hey it's T1c t@c t0e! :) [wxWidgets edition]"), wxDefaultPosition, wxSize(450, 350))
+        : wxFrame(NULL, -1, _("hey it's T1c t@c t0e! :) [wxWidgets edition]"), wxDefaultPosition, wxSize(450, 350))
         {
             m_gamePresenter = gamePresenter;
 
@@ -24,7 +24,7 @@ namespace Client
                 {
                     // encode id as i * gridsize + j: determine i by dividing by gridsize, j by mod gridsize.
                     int buttonId = i * 3 + j;
-                    wxButton* button =new wxButton(this, buttonId, wxT("X"));
+                    wxButton* button =new wxButton(this, buttonId, _(""));
                     m_tileButtons[i][j] = button;
 
                     Connect(buttonId, wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(TicTacToe::Client::WxGameView::OnClick));
@@ -48,7 +48,7 @@ namespace Client
         void PromptCoordinates()
         {
             UpdateTileButtons(false);
-            SetStatusText(_("Waiting for your move..."));
+            SetStatusText(_("Waiting for your move. You're 'X'."));
         }
 
         void ShowInvalidMove(int posX, int posY)

@@ -113,10 +113,10 @@ namespace Client
             m_gameService = gameService;
         }
 
-        static shared_ptr<ClientProxyGameService> CreateLocal()
+        static shared_ptr<IGameService> CreateLocal()
         {
             shared_ptr<IGameService> remoteGameService(InMemoryGameService::Create());
-            return shared_ptr<ClientProxyGameService>(new ClientProxyGameService(remoteGameService));
+            return shared_ptr<IGameService>(new ClientProxyGameService(remoteGameService));
         }
 
         int GetWinnerForGameId(int gameId)
