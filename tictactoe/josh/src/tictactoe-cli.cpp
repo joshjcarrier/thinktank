@@ -91,7 +91,7 @@ namespace Client
 
         void ShowTiles()
         {
-            auto tiles = m_gamePresenter->GetCurrentGame()->GetTiles();
+            vector<vector<int>> tiles = m_gamePresenter->GetCurrentGame()->GetTiles();
             for (int i = 0; i < tiles.size(); i++)
             {
                 for (int j = 0; j < tiles[0].size(); j++)
@@ -138,9 +138,9 @@ namespace Client
     public:
         Application()
         {
-            auto gameService = shared_ptr<IGameService>(TicTacToe::Client::ClientProxyGameService::CreateLocal());
+            shared_ptr<IGameService> gameService(TicTacToe::Client::ClientProxyGameService::CreateLocal());
 
-            auto gamePresenter = unique_ptr<IGamePresenter>(new GamePresenter<ConsoleGameView>(gameService));
+            unique_ptr<IGamePresenter> gamePresenter(new GamePresenter<ConsoleGameView>(gameService));
             gamePresenter->Show();
         }
     };
@@ -148,6 +148,6 @@ namespace Client
 
 int main()
 {
-    auto application = unique_ptr<TicTacToe::Client::Application>(new TicTacToe::Client::Application());
+    unique_ptr<TicTacToe::Client::Application> app(new TicTacToe::Client::Application());
     return 0;
 }

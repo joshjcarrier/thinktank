@@ -20,7 +20,7 @@ public:
 
     shared_ptr<PlayerAction> ComputeSuggestedAction(shared_ptr<Game>& game, int playerId)
     {
-        auto opponentAction = shared_ptr<PlayerAction>(new PlayerAction);
+        shared_ptr<PlayerAction> opponentAction(new PlayerAction);
 
         if (game->IsNewGame())
         {

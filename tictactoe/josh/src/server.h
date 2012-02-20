@@ -15,13 +15,13 @@ public:
 
     static shared_ptr<IGameService> Create()
     {
-        auto intelligence = shared_ptr<IArtificialIntelligence>(new BogoArtificialIntelligence(3));
+        shared_ptr<IArtificialIntelligence> intelligence(new BogoArtificialIntelligence(3));
         return shared_ptr<IGameService>(new InMemoryGameService(intelligence));
     }
 
     int GetWinnerForGameId(int gameId)
     {
-        auto game = GetGameById(gameId);
+        shared_ptr<Game> game = GetGameById(gameId);
         game->WinningPlayerId = CalculateWinningPlayerId(game->GetTiles());
         return game->WinningPlayerId;
     }
@@ -45,8 +45,8 @@ public:
 
     shared_ptr<PlayerAction> WaitForMove(int gameId, int playerId)
     {
-        auto game = GetGameById(gameId);
-        auto opponentMove = m_intelligence->ComputeSuggestedAction(game, 2);
+        shared_ptr<Game> game = GetGameById(gameId);
+        shared_ptr<PlayerAction> opponentMove = m_intelligence->ComputeSuggestedAction(game, 2);
         m_game->Move(opponentMove->PlayerId, opponentMove->PosX, opponentMove->PosY);
         return opponentMove;
     }

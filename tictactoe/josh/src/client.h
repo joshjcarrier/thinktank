@@ -36,7 +36,7 @@ namespace Client
         GamePresenter(shared_ptr<IGameService>& gameService)
         {
             m_gameService = gameService;
-            auto self = shared_ptr<IGamePresenter>(this);
+            shared_ptr<IGamePresenter> self(this);
             m_gameView = unique_ptr<TView>(new TView(self));
         }
 
@@ -97,7 +97,7 @@ namespace Client
         void WaitForMove()
         {
             // ideally this would block and wait until it's the players turn again
-            auto opponentAction = m_gameService->WaitForMove(m_currentGameId, 1);
+            shared_ptr<PlayerAction> opponentAction = m_gameService->WaitForMove(m_currentGameId, 1);
             m_gameService->Move(m_currentGameId, opponentAction->PlayerId, opponentAction->PosX, opponentAction->PosY);
         }
     };
@@ -115,9 +115,8 @@ namespace Client
 
         static shared_ptr<ClientProxyGameService> CreateLocal()
         {
-            auto remoteGameService = shared_ptr<IGameService>(InMemoryGameService::Create());
-            auto instance = shared_ptr<ClientProxyGameService>(new ClientProxyGameService(remoteGameService));
-            return instance;
+            shared_ptr<IGameService> remoteGameService(InMemoryGameService::Create());
+            return shared_ptr<ClientProxyGameService>(new ClientProxyGameService(remoteGameService));
         }
 
         int GetWinnerForGameId(int gameId)
