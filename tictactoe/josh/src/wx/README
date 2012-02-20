@@ -1,0 +1,11 @@
+1. Place the wxWidgets source folder for the version corresponding in the root Makefile.
+	E.g. src/wx/2.8.12/
+	Contains:
+		- configure
+		- wx-config
+
+   WxWidgets is a cross-platform GUI library that can be found at <http://wxwidgets.org>.
+
+2. Run `make wx-init` from root Makefile.
+
+3. Build the wx version of TicTacToe with `make wx`.
