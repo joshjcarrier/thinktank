@@ -8,11 +8,11 @@ namespace Client
     // have to use regular pointers here instead of smart pointers due to integration with wxWidgets.
     class WxGameView : public IGameView, public wxFrame
     {
-        shared_ptr<IGamePresenter> m_gamePresenter;
+        weak_ptr<IGamePresenter> m_gamePresenter;
         wxButton* m_tileButtons[3][3];
 
     public:
-        WxGameView(shared_ptr<IGamePresenter>& gamePresenter)
+        WxGameView(weak_ptr<IGamePresenter>& gamePresenter)
         : wxFrame(NULL, -1, _("hey it's T1c t@c t0e! :) [wxWidgets edition]"), wxDefaultPosition, wxSize(450, 350))
         {
             m_gamePresenter = gamePresenter;
@@ -40,7 +40,7 @@ namespace Client
 
         void ShowDialog()
         {
-            m_gamePresenter->HostAndJoin();
+            m_gamePresenter.lock()->HostAndJoin();
 
             Show(true);
         }
@@ -78,12 +78,12 @@ namespace Client
 
             int posX = event.GetId() / 3;
             int posY = event.GetId() - (3 * posX);
-            m_gamePresenter->Move(posX, posY);
+            m_gamePresenter.lock()->Move(posX, posY);
         }
 
         void UpdateTileButtons(bool isGameOver)
         {
-            vector<vector<int>> tiles = m_gamePresenter->GetCurrentGame()->GetTiles();
+            vector<vector<int>> tiles = m_gamePresenter.lock()->GetCurrentGame()->GetTiles();
             for (int i = 0; i < tiles.size(); i++)
             {
                 for (int j = 0; j < tiles[0].size(); j++)
@@ -117,14 +117,18 @@ namespace Client
 
     class Application : public wxApp
     {
-        unique_ptr<IGamePresenter> m_gamePresenter;
+        shared_ptr<IGamePresenter> m_gamePresenter;
         shared_ptr<IGameService> m_gameService;
 
     public:
         bool OnInit()
         {
             m_gameService = shared_ptr<IGameService>(TicTacToe::Client::ClientProxyGameService::CreateLocal());
-            m_gamePresenter = unique_ptr<IGamePresenter>(new GamePresenter<WxGameView>(m_gameService));
+            m_gamePresenter = shared_ptr<IGamePresenter>(new GamePresenter<WxGameView>(m_gameService));
+
+            // oh god why.
+            weak_ptr<IGamePresenter> weakGamePresenter(m_gamePresenter);
+            m_gamePresenter->Initialize(weakGamePresenter);
             m_gamePresenter->Show();
             return true;
         }

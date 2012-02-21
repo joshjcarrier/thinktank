@@ -13,10 +13,10 @@ namespace Client
     /// </summary>
     class ConsoleGameView : public IGameView
     {
-        shared_ptr<IGamePresenter> m_gamePresenter;
+        weak_ptr<IGamePresenter> m_gamePresenter;
 
     public:
-        ConsoleGameView(shared_ptr<IGamePresenter>& gamePresenter)
+        ConsoleGameView(weak_ptr<IGamePresenter>& gamePresenter)
         {
             m_gamePresenter = gamePresenter;
         }
@@ -27,7 +27,7 @@ namespace Client
             cout << endl;
             cout << "You're 'X'." << endl;
 
-            m_gamePresenter->HostAndJoin();
+            m_gamePresenter.lock()->HostAndJoin();
         }
 
         void PromptCoordinates()
@@ -39,7 +39,7 @@ namespace Client
             int xCoordChoice = PromptInteger("Next move X co-ordinate? (1-3)", 1, 3);
             int yCoordChoice = PromptInteger("Next move Y co-ordinate? (1-3)", 1, 3);
 
-            m_gamePresenter->Move(xCoordChoice - 1, yCoordChoice - 1);
+            m_gamePresenter.lock()->Move(xCoordChoice - 1, yCoordChoice - 1);
         }
 
         void ShowInvalidMove(int posX, int posY)
@@ -91,7 +91,7 @@ namespace Client
 
         void ShowTiles()
         {
-            vector<vector<int>> tiles = m_gamePresenter->GetCurrentGame()->GetTiles();
+            vector<vector<int>> tiles = m_gamePresenter.lock()->GetCurrentGame()->GetTiles();
             for (int i = 0; i < tiles.size(); i++)
             {
                 for (int j = 0; j < tiles[0].size(); j++)
@@ -140,7 +140,9 @@ namespace Client
         {
             shared_ptr<IGameService> gameService(TicTacToe::Client::ClientProxyGameService::CreateLocal());
 
-            unique_ptr<IGamePresenter> gamePresenter(new GamePresenter<ConsoleGameView>(gameService));
+            shared_ptr<IGamePresenter> gamePresenter(new GamePresenter<ConsoleGameView>(gameService));
+            weak_ptr<IGamePresenter> weakGamePresenter(gamePresenter);
+            gamePresenter->Initialize(weakGamePresenter);
             gamePresenter->Show();
         }
     };

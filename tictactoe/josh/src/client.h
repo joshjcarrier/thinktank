@@ -7,6 +7,7 @@ namespace Client
     class IGameView
     {
     public:
+        virtual ~IGameView() { }
         virtual void PromptCoordinates() = 0;
         virtual void ShowInvalidMove(int posX, int posY) = 0;
         virtual void ShowWinner(int playerId) = 0;
@@ -15,8 +16,10 @@ namespace Client
     class IGamePresenter
     {
     public:
+        virtual ~IGamePresenter() { }
         virtual shared_ptr<Game> GetCurrentGame() = 0;
         virtual void HostAndJoin() = 0;
+        virtual void Initialize(weak_ptr<IGamePresenter>& gamePresenter) = 0;
         virtual void Show() = 0;
         virtual void Move(int posX, int posY) = 0;
     };
@@ -36,8 +39,14 @@ namespace Client
         GamePresenter(shared_ptr<IGameService>& gameService)
         {
             m_gameService = gameService;
-            shared_ptr<IGamePresenter> self(this);
-            m_gameView = unique_ptr<TView>(new TView(self));
+//            shared_ptr<IGamePresenter> self(this);
+//            m_gameView = unique_ptr<TView>(new TView(self));
+        }
+
+        // TOOD bleh.
+        void Initialize(weak_ptr<IGamePresenter>& gamePresenter)
+        {
+            m_gameView = unique_ptr<TView>(new TView(gamePresenter));
         }
 
         shared_ptr<Game> GetCurrentGame()

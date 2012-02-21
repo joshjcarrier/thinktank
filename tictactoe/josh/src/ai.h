@@ -4,6 +4,7 @@
 class IArtificialIntelligence
 {
 public:
+    virtual ~IArtificialIntelligence() { }
     virtual shared_ptr<PlayerAction> ComputeSuggestedAction(shared_ptr<Game>& game, int playerId) = 0;
 };
 

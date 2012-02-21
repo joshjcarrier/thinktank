@@ -56,6 +56,7 @@ public:
 class IGameService
 {
 public:
+    virtual ~IGameService() { }
     virtual int GetWinnerForGameId(int gameId) = 0;
     virtual int Host() = 0;
     virtual shared_ptr<Game> Join(int gameId) = 0;
